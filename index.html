@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSE Dividend Dashboard — 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #1a2332 0%, #0d1b2a 100%); border-bottom: 1px solid #30363d; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 1.4rem; font-weight: 700; color: #58a6ff; letter-spacing: 0.5px; }
+  header .meta { font-size: 0.78rem; color: #8b949e; text-align: right; line-height: 1.6; }
+  .meta span { color: #3fb950; font-weight: 600; }
+
+  .stats-bar { display: flex; gap: 16px; padding: 16px 32px; background: #161b22; border-bottom: 1px solid #21262d; flex-wrap: wrap; }
+  .stat { background: #1c2128; border: 1px solid #30363d; border-radius: 8px; padding: 12px 20px; min-width: 140px; }
+  .stat .label { font-size: 0.7rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .stat .value { font-size: 1.35rem; font-weight: 700; color: #e6edf3; }
+  .stat .value.green { color: #3fb950; }
+  .stat .value.yellow { color: #e3b341; }
+  .stat .value.red { color: #f85149; }
+  .stat .value.blue { color: #58a6ff; }
+
+  .controls { padding: 16px 32px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: #0d1117; border-bottom: 1px solid #21262d; }
+  .controls input { background: #1c2128; border: 1px solid #30363d; color: #e6edf3; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; width: 260px; outline: none; }
+  .controls input:focus { border-color: #58a6ff; }
+  .controls input::placeholder { color: #484f58; }
+  .filter-btn { background: #21262d; border: 1px solid #30363d; color: #8b949e; padding: 7px 14px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; }
+  .filter-btn:hover, .filter-btn.active { background: #58a6ff; color: #0d1117; border-color: #58a6ff; font-weight: 600; }
+  .sort-label { font-size: 0.78rem; color: #8b949e; margin-left: 8px; }
+
+  .section-title { padding: 14px 32px 6px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.2px; color: #58a6ff; font-weight: 700; border-top: 1px solid #21262d; }
+
+  .table-wrap { padding: 0 32px 32px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 8px; }
+  thead th { background: #161b22; color: #8b949e; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 12px; text-align: left; border-bottom: 2px solid #30363d; white-space: nowrap; cursor: pointer; user-select: none; }
+  thead th:hover { color: #e6edf3; }
+  thead th.sorted { color: #58a6ff; }
+  thead th .arrow { margin-left: 4px; font-size: 0.65rem; }
+  tbody tr { border-bottom: 1px solid #1c2128; transition: background 0.1s; }
+  tbody tr:hover { background: #1c2128; }
+  tbody td { padding: 9px 12px; vertical-align: middle; }
+
+  .ticker { font-weight: 700; font-size: 0.88rem; color: #58a6ff; white-space: nowrap; }
+  .company { color: #c9d1d9; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sector-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.68rem; font-weight: 600; white-space: nowrap; }
+  .s-banking { background: #1f3a5f; color: #58a6ff; }
+  .s-reit { background: #1e3a2e; color: #3fb950; }
+  .s-holding { background: #3a2b1e; color: #e3b341; }
+  .s-property { background: #2d1e3a; color: #bc8cff; }
+  .s-utilities { background: #1e3038; color: #79c0ff; }
+  .s-food { background: #3a2328; color: #ff7b72; }
+  .s-telco { background: #1e3a38; color: #56d364; }
+  .s-mining { background: #382e1e; color: #d29922; }
+  .s-industrials { background: #2a2d36; color: #a5b4fc; }
+  .s-retail { background: #3a2b2b; color: #f0883e; }
+  .s-education { background: #1e2a3a; color: #7dd3fc; }
+  .s-exchange { background: #2b3a2b; color: #86efac; }
+  .s-preferred { background: #3a1e3a; color: #e879f9; }
+  .s-diversified { background: #3a3520; color: #fbbf24; }
+
+  .dps { font-weight: 700; color: #e6edf3; }
+  .yield { font-weight: 700; }
+  .yield.high { color: #3fb950; }
+  .yield.mid { color: #e3b341; }
+  .yield.low { color: #8b949e; }
+  .yield.none { color: #484f58; }
+
+  .date-cell { white-space: nowrap; font-size: 0.8rem; }
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; white-space: nowrap; }
+  .badge-urgent { background: #3d1f1f; color: #f85149; border: 1px solid #6e1c1c; }
+  .badge-upcoming { background: #1f3020; color: #3fb950; border: 1px solid #1d4429; }
+  .badge-past { background: #1c2128; color: #484f58; border: 1px solid #30363d; }
+  .badge-expected { background: #2d2210; color: #e3b341; border: 1px solid #4d3b0f; }
+
+  .freq-tag { font-size: 0.7rem; color: #8b949e; }
+  .notes-cell { font-size: 0.75rem; color: #8b949e; max-width: 180px; }
+  .notes-cell .highlight { color: #e3b341; font-weight: 600; }
+
+  .payout { color: #c9d1d9; }
+  .payout.high { color: #f85149; }
+
+  .legend { padding: 12px 32px 20px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #8b949e; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .yield-bar-cell { width: 80px; }
+  .yield-bar { height: 6px; border-radius: 3px; background: #21262d; overflow: hidden; }
+  .yield-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #1f6feb, #3fb950); }
+
+  .no-results { text-align: center; padding: 40px; color: #484f58; font-size: 0.9rem; }
+
+  .reit-highlight { background: rgba(63, 185, 80, 0.04); }
+
+  @media (max-width: 768px) {
+    header, .stats-bar, .controls, .section-title, .table-wrap, .legend { padding-left: 16px; padding-right: 16px; }
+    .stat { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📊 PSE Dividend Dashboard</h1>
+    <div style="font-size:0.72rem; color:#484f58; margin-top:3px;">Philippine Stock Exchange — 2026 Dividend Tracker</div>
+  </div>
+  <div class="meta">
+    Reference Date: <span>June 30, 2026</span><br>
+    Sources: PSE EDGE · EODHD · StockAnalysis · COL Financial<br>
+    <span style="color:#f85149">⚠ For reference only — verify via PSE EDGE before executing</span>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="label">Total Stocks</div><div class="value blue" id="total-count">48</div></div>
+  <div class="stat"><div class="label">Urgent (≤30 days)</div><div class="value red" id="urgent-count">5</div></div>
+  <div class="stat"><div class="label">Upcoming (30–90d)</div><div class="value yellow" id="upcoming-count">7</div></div>
+  <div class="stat"><div class="label">Highest Yield</div><div class="value green">10.91%</div><div style="font-size:0.68rem;color:#8b949e;margin-top:2px;">PREIT</div></div>
+  <div class="stat"><div class="label">REITs Tracked</div><div class="value green">8</div></div>
+  <div class="stat"><div class="label">Avg Yield (all)</div><div class="value blue">5.42%</div></div>
+  <div class="stat"><div class="label">PSEi Close</div><div class="value green">6,133.41</div><div style="font-size:0.68rem;color:#3fb950;margin-top:2px;">+1.01% Jun 29</div></div>
+  <div class="stat"><div class="label">BSP Rate</div><div class="value yellow">4.75%</div><div style="font-size:0.68rem;color:#8b949e;margin-top:2px;">Hiked Jun 18</div></div>
+</div>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="🔍  Search ticker, company, sector..." oninput="applyFilters()">
+  <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+  <button class="filter-btn" onclick="setFilter('urgent', this)">🔴 Urgent</button>
+  <button class="filter-btn" onclick="setFilter('upcoming', this)">🟢 Upcoming</button>
+  <button class="filter-btn" onclick="setFilter('expected', this)">🟡 Expected</button>
+  <button class="filter-btn" onclick="setFilter('reit', this)">REIT Only</button>
+  <button class="filter-btn" onclick="setFilter('banking', this)">Banking</button>
+  <button class="filter-btn" onclick="setFilter('high-yield', this)">Yield ≥ 6%</button>
+  <span class="sort-label">Sort by ex-date (asc)</span>
+</div>
+
+<div class="section-title">🔴 URGENT — Ex-Date within 30 days</div>
+<div class="table-wrap">
+<table id="main-table">
+<thead>
+  <tr>
+    <th onclick="sortTable(0)">Ticker <span class="arrow">↕</span></th>
+    <th onclick="sortTable(1)">Company <span class="arrow">↕</span></th>
+    <th onclick="sortTable(2)">Sector <span class="arrow">↕</span></th>
+    <th onclick="sortTable(3)">DPS (PHP) <span class="arrow">↕</span></th>
+    <th onclick="sortTable(4)">Annual DPS <span class="arrow">↕</span></th>
+    <th onclick="sortTable(5)">Yield % <span class="arrow">↕</span></th>
+    <th style="width:80px">Yield Bar</th>
+    <th onclick="sortTable(7)">Ex-Date <span class="arrow">↕</span></th>
+    <th onclick="sortTable(8)">Pay Date <span class="arrow">↕</span></th>
+    <th onclick="sortTable(9)">Frequency <span class="arrow">↕</span></th>
+    <th>Status</th>
+    <th>Notes</th>
+  </tr>
+</thead>
+<tbody id="table-body">
+</tbody>
+</table>
+<div class="no-results" id="no-results" style="display:none">No stocks match your filter.</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div> Urgent ≤30 days</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3fb950"></div> Upcoming 30–90 days</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e3b341"></div> Expected (pattern-based, not yet declared)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#484f58"></div> Past (already paid)</div>
+  <div style="margin-left:auto; font-size:0.7rem; color:#484f58;">Data sourced from PSE EDGE, EODHD, StockAnalysis.com · Yields computed from declared DPS vs approx. market price · Ex-dates for "Expected" items are inferred from historical patterns — verify on PSE EDGE before acting</div>
+</div>
+
+<script>
+const DATA = [
+  // URGENT
+  { ticker:"JFCPB", company:"JFC Preferred Series B", sector:"Preferred", dps:10.60125, annual:42.405, yield:null, exDate:"2026-07-01", payDate:"2026-07-15", freq:"Quarterly", status:"urgent", notes:"PSE EDGE confirmed" },
+  { ticker:"SGP", company:"Synergy Grid & Power", sector:"Utilities", dps:0.3474, annual:0.6948, yield:null, exDate:"2026-07-07", payDate:"2026-07-24", freq:"Semi-Annual", status:"urgent", notes:"Semi-annual tranche" },
+  { ticker:"SBS", company:"SBS Philippines Corp", sector:"Industrials", dps:0.0035, annual:0.0035, yield:null, exDate:"2026-07-09", payDate:"2026-07-22", freq:"Annual", status:"urgent", notes:"Small cap" },
+  { ticker:"FNI", company:"Global Ferronickel Holdings", sector:"Mining", dps:0.0603, annual:0.0603, yield:null, exDate:"2026-07-29", payDate:"2026-08-25", freq:"Annual", status:"urgent", notes:"Mining sector" },
+  { ticker:"DDMPR", company:"DDMP REIT Inc", sector:"REIT", dps:0.024253, annual:0.095, yield:9.05, exDate:"2026-07-30", payDate:"2026-08-27", freq:"Quarterly", status:"urgent", notes:"Highest-yield REIT; C04735-2026 confirmed" },
+  // UPCOMING
+  { ticker:"PGOLD", company:"Puregold Price Club", sector:"Retail", dps:0.79, annual:1.97, yield:4.89, exDate:"2026-08-14", payDate:"2026-09-09", freq:"Semi-Annual", status:"upcoming", notes:"Semi-annual final tranche" },
+  { ticker:"COSCO", company:"Cosco Capital Inc", sector:"Retail", dps:0.133, annual:0.133, yield:null, exDate:"2026-08-19", payDate:"2026-09-14", freq:"Annual", status:"upcoming", notes:"" },
+  { ticker:"AUB", company:"Asia United Bank Corp", sector:"Banking", dps:1.00, annual:2.50, yield:null, exDate:"2026-09-11", payDate:"2026-09-30", freq:"Semi-Annual", status:"upcoming", notes:"" },
+  { ticker:"PNB", company:"Philippine National Bank", sector:"Banking", dps:1.65, annual:3.30, yield:5.69, exDate:"2026-09-17", payDate:"2026-10-01", freq:"Quarterly", status:"upcoming", notes:"" },
+  { ticker:"PSE", company:"Phil. Stock Exchange Inc", sector:"Exchange", dps:5.50, annual:11.00, yield:5.00, exDate:"2026-09-30", payDate:"2026-10-12", freq:"Semi-Annual", status:"upcoming", notes:"" },
+  // EXPECTED
+  { ticker:"GLO", company:"Globe Telecom Inc", sector:"Telco", dps:25.00, annual:100.00, yield:5.56, exDate:"2026-08-01", payDate:"2026-08-20", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
+  { ticker:"AREIT", company:"AREIT Inc", sector:"REIT", dps:0.62, annual:2.48, yield:6.67, exDate:"2026-08-25", payDate:"2026-09-10", freq:"Quarterly", status:"expected", notes:"PHP19.5B asset infusion approved; AUM→PHP158B" },
+  { ticker:"MREIT", company:"MREIT Inc", sector:"REIT", dps:0.263, annual:1.052, yield:7.17, exDate:"2026-08-14", payDate:"2026-08-29", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
+  { ticker:"RCR", company:"RL Commercial REIT", sector:"REIT", dps:0.1115, annual:0.446, yield:6.28, exDate:"2026-08-18", payDate:"2026-09-01", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
+  { ticker:"FILRT", company:"Filinvest REIT Corp", sector:"REIT", dps:0.060, annual:0.24, yield:8.23, exDate:"2026-08-22", payDate:"2026-09-05", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
+  { ticker:"LTG", company:"LT Group Inc", sector:"Holding", dps:0.30, annual:1.25, yield:8.41, exDate:"2026-09-04", payDate:"2026-09-18", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Sep 2026" },
+  { ticker:"BDO", company:"BDO Unibank Inc", sector:"Banking", dps:1.10, annual:4.40, yield:3.37, exDate:"2026-09-08", payDate:"2026-09-22", freq:"Quarterly", status:"expected", notes:"Papa Sec flags Q2 earnings leader" },
+  { ticker:"MBT", company:"Metropolitan Bank", sector:"Banking", dps:1.50, annual:5.00, yield:7.59, exDate:"2026-09-06", payDate:"2026-09-26", freq:"Semi-Annual", status:"expected", notes:"Maybank-KE: special dividend possible; highest CET1" },
+  { ticker:"TEL", company:"PLDT Inc", sector:"Telco", dps:48.00, annual:94.00, yield:8.33, exDate:"2026-08-25", payDate:"2026-09-16", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
+  { ticker:"MER", company:"Manila Electric Company", sector:"Utilities", dps:11.00, annual:28.00, yield:4.83, exDate:"2026-08-25", payDate:"2026-09-20", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Aug-Sep 2026" },
+  { ticker:"CNPF", company:"Century Pacific Food", sector:"Food", dps:0.55, annual:1.15, yield:3.83, exDate:"2026-08-02", payDate:"2026-08-25", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Jul-Aug 2026" },
+  // PAST
+  { ticker:"AC", company:"Ayala Corporation", sector:"Holding", dps:4.605, annual:9.21, yield:2.18, exDate:"2026-01-02", payDate:"2026-01-14", freq:"Semi-Annual", status:"past", notes:"" },
+  { ticker:"MBT", company:"Metropolitan Bank", sector:"Banking", dps:3.50, annual:5.00, yield:7.59, exDate:"2026-03-06", payDate:"2026-03-26", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"MER", company:"Manila Electric Company", sector:"Utilities", dps:16.672, annual:28.00, yield:4.83, exDate:"2026-03-25", payDate:"2026-04-20", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"TEL", company:"PLDT Inc", sector:"Telco", dps:46.00, annual:94.00, yield:8.33, exDate:"2026-03-25", payDate:"2026-04-16", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"ALI", company:"Ayala Land Inc", sector:"Property", dps:0.3513, annual:0.58, yield:3.80, exDate:"2026-03-05", payDate:"2026-03-19", freq:"Semi-Annual", status:"past", notes:"" },
+  { ticker:"CNPF", company:"Century Pacific Food", sector:"Food", dps:0.60, annual:1.15, yield:3.83, exDate:"2026-03-02", payDate:"2026-03-25", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"AEV", company:"Aboitiz Equity Ventures", sector:"Holding", dps:1.53, annual:1.10, yield:3.26, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"" },
+  { ticker:"AP", company:"Aboitiz Power Corp", sector:"Utilities", dps:2.28, annual:1.35, yield:3.34, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"" },
+  { ticker:"ICT", company:"Int'l Container Terminal Svcs", sector:"Industrials", dps:17.85, annual:18.69, yield:2.11, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"USD earner; PSO hedge" },
+  { ticker:"AREIT", company:"AREIT Inc", sector:"REIT", dps:0.62, annual:2.48, yield:6.67, exDate:"2026-05-26", payDate:"2026-06-11", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"MREIT", company:"MREIT Inc", sector:"REIT", dps:0.263, annual:1.052, yield:7.17, exDate:"2026-05-14", payDate:"2026-05-29", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"RCR", company:"RL Commercial REIT", sector:"REIT", dps:0.1115, annual:0.446, yield:6.28, exDate:"2026-05-18", payDate:"2026-06-01", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"FILRT", company:"Filinvest REIT Corp", sector:"REIT", dps:0.060, annual:0.24, yield:8.23, exDate:"2026-05-22", payDate:"2026-06-05", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"PREIT", company:"Premiere Island REIT", sector:"REIT", dps:0.035, annual:0.127, yield:10.91, exDate:"2026-05-15", payDate:"-", freq:"Quarterly", status:"past", notes:"Highest yield REIT in universe" },
+  { ticker:"CREIT", company:"Citicore REIT Corp", sector:"REIT", dps:0.049, annual:0.196, yield:5.85, exDate:"2026-06-10", payDate:"2026-07-08", freq:"Quarterly", status:"past", notes:"Solar/renewable focus" },
+  { ticker:"GLO", company:"Globe Telecom Inc", sector:"Telco", dps:25.00, annual:100.00, yield:5.56, exDate:"2026-05-22", payDate:"2026-06-10", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"BDO", company:"BDO Unibank Inc", sector:"Banking", dps:1.10, annual:4.40, yield:3.37, exDate:"2026-06-08", payDate:"2026-06-22", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"BPI", company:"Bank of the Philippine Islands", sector:"Banking", dps:2.58, annual:4.56, yield:4.68, exDate:"2026-06-03", payDate:"2026-06-18", freq:"Semi-Annual", status:"past", notes:"" },
+  { ticker:"LTG", company:"LT Group Inc", sector:"Holding", dps:0.30, annual:1.25, yield:8.41, exDate:"2026-06-04", payDate:"2026-06-18", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
+  { ticker:"DMC", company:"DMCI Holdings Inc", sector:"Industrials", dps:0.30, annual:0.78, yield:10.26, exDate:"2026-05-20", payDate:"2026-06-05", freq:"Semi-Annual", status:"past", notes:"High yield conglomerate" },
+  { ticker:"SM", company:"SM Investments Corp", sector:"Holding", dps:17.00, annual:17.00, yield:2.85, exDate:"2026-05-13", payDate:"2026-05-28", freq:"Annual", status:"past", notes:"31% jump from PHP13 in FY25" },
+  { ticker:"SMPH", company:"SM Prime Holdings", sector:"Property", dps:0.42, annual:0.48, yield:2.59, exDate:"2026-05-12", payDate:"2026-05-27", freq:"Annual", status:"past", notes:"" },
+  { ticker:"JFC", company:"Jollibee Foods Corp", sector:"Food", dps:1.33, annual:3.44, yield:2.62, exDate:"2026-05-04", payDate:"2026-05-21", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"RLC", company:"Robinsons Land Corp", sector:"Property", dps:1.00, annual:1.00, yield:6.06, exDate:"2026-05-25", payDate:"2026-06-08", freq:"Annual", status:"past", notes:"33% increase from PHP0.75 FY25" },
+  { ticker:"FLI", company:"Filinvest Land Inc", sector:"Property", dps:0.05, annual:0.05, yield:7.25, exDate:"2026-05-13", payDate:"2026-05-22", freq:"Annual", status:"past", notes:"" },
+  { ticker:"EW", company:"East West Banking Corp", sector:"Banking", dps:0.82, annual:0.68, yield:5.59, exDate:"2026-05-08", payDate:"2026-05-29", freq:"Annual", status:"past", notes:"" },
+  { ticker:"SECB", company:"Security Bank Corp", sector:"Banking", dps:1.50, annual:3.00, yield:4.59, exDate:"2026-04-22", payDate:"2026-05-08", freq:"Semi-Annual", status:"past", notes:"" },
+  { ticker:"CBC", company:"China Banking Corp", sector:"Banking", dps:2.80, annual:2.80, yield:4.90, exDate:"2026-04-29", payDate:"2026-05-14", freq:"Annual", status:"past", notes:"" },
+  { ticker:"MONDE", company:"Monde Nissin Corp", sector:"Food", dps:0.24, annual:0.48, yield:6.78, exDate:"2026-04-23", payDate:"2026-05-21", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
+  { ticker:"GTCAP", company:"GT Capital Holdings", sector:"Holding", dps:7.08, annual:10.08, yield:2.02, exDate:"2026-04-07", payDate:"2026-04-22", freq:"Semi-Annual", status:"past", notes:"" },
+  { ticker:"URC", company:"Universal Robina Corp", sector:"Food", dps:2.10, annual:2.10, yield:3.28, exDate:"2026-04-08", payDate:"2026-05-07", freq:"Annual", status:"past", notes:"" },
+  { ticker:"SMC", company:"San Miguel Corporation", sector:"Diversified", dps:0.35, annual:1.40, yield:2.07, exDate:"2026-06-25", payDate:"2026-07-22", freq:"Quarterly", status:"past", notes:"" },
+  { ticker:"EMI", company:"Emperador Inc", sector:"Food", dps:0.1351, annual:0.14, yield:0.88, exDate:"2026-01-19", payDate:"2026-01-29", freq:"Annual", status:"past", notes:"" },
+  { ticker:"CEU", company:"Centro Escolar University", sector:"Education", dps:1.00, annual:1.00, yield:null, exDate:"2026-06-29", payDate:"2026-07-23", freq:"Annual", status:"past", notes:"" },
+];
+
+let currentFilter = 'all';
+let sortCol = 7;
+let sortAsc = true;
+
+function getSectorClass(s) {
+  const map = { Banking:'s-banking', REIT:'s-reit', Holding:'s-holding', Property:'s-property', Utilities:'s-utilities', Food:'s-food', Telco:'s-telco', Mining:'s-mining', Industrials:'s-industrials', Retail:'s-retail', Education:'s-education', Exchange:'s-exchange', Preferred:'s-preferred', Diversified:'s-diversified' };
+  return map[s] || 's-industrials';
+}
+
+function yieldClass(y) {
+  if (!y) return 'none';
+  if (y >= 7) return 'high';
+  if (y >= 4) return 'mid';
+  return 'low';
+}
+
+function formatDate(d) {
+  if (!d || d === '-') return '<span style="color:#484f58">—</span>';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function daysDiff(d) {
+  if (!d || d === '-') return 9999;
+  const now = new Date('2026-06-30');
+  const dt = new Date(d + 'T00:00:00');
+  return Math.round((dt - now) / 86400000);
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const rows = document.querySelectorAll('#table-body tr');
+  let visible = 0;
+  rows.forEach(row => {
+    const status = row.dataset.status;
+    const sector = row.dataset.sector;
+    const yieldVal = parseFloat(row.dataset.yield) || 0;
+    const text = row.textContent.toLowerCase();
+    let show = text.includes(q);
+    if (currentFilter === 'urgent') show = show && status === 'urgent';
+    else if (currentFilter === 'upcoming') show = show && status === 'upcoming';
+    else if (currentFilter === 'expected') show = show && status === 'expected';
+    else if (currentFilter === 'reit') show = show && sector === 'REIT';
+    else if (currentFilter === 'banking') show = show && sector === 'Banking';
+    else if (currentFilter === 'high-yield') show = show && yieldVal >= 6;
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('no-results').style.display = visible === 0 ? '' : 'none';
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  renderTable();
+}
+
+function getSortVal(row, col) {
+  if (col === 3) return row.dps || 0;
+  if (col === 4) return row.annual || 0;
+  if (col === 5) return row.yield || 0;
+  if (col === 7) return row.exDate || 'zzzz';
+  if (col === 8) return row.payDate || 'zzzz';
+  if (col === 0) return row.ticker;
+  if (col === 1) return row.company;
+  if (col === 2) return row.sector;
+  if (col === 9) return row.freq;
+  return '';
+}
+
+function statusOrder(s) { return { urgent:0, upcoming:1, expected:2, past:3 }[s] || 4; }
+
+function renderTable() {
+  // Deduplicate by ticker+status (keep one entry per ticker per status)
+  const seen = new Set();
+  const deduped = DATA.filter(d => {
+    const key = d.ticker + '|' + d.status;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const sorted = [...deduped].sort((a, b) => {
+    // Primary: status order
+    const sd = statusOrder(a.status) - statusOrder(b.status);
+    if (sd !== 0) return sd;
+    // Secondary: sort col
+    const av = getSortVal(a, sortCol), bv = getSortVal(b, sortCol);
+    if (av < bv) return sortAsc ? -1 : 1;
+    if (av > bv) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  let urgentCount = 0, upcomingCount = 0;
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  sorted.forEach(d => {
+    const days = daysDiff(d.exDate);
+    if (d.status === 'urgent') urgentCount++;
+    if (d.status === 'upcoming') upcomingCount++;
+
+    const yc = yieldClass(d.yield);
+    const yieldText = d.yield ? `<span class="yield ${yc}">${d.yield.toFixed(2)}%</span>` : '<span class="yield none">—</span>';
+    const yieldBarW = d.yield ? Math.min(100, (d.yield / 12) * 100) : 0;
+
+    let statusBadge = '';
+    if (d.status === 'urgent') statusBadge = `<span class="badge badge-urgent">🔴 ${days}d</span>`;
+    else if (d.status === 'upcoming') statusBadge = `<span class="badge badge-upcoming">🟢 ${days}d</span>`;
+    else if (d.status === 'expected') statusBadge = `<span class="badge badge-expected">🟡 Est.</span>`;
+    else statusBadge = `<span class="badge badge-past">Paid</span>`;
+
+    const trClass = d.sector === 'REIT' ? 'reit-highlight' : '';
+    const tr = document.createElement('tr');
+    tr.className = trClass;
+    tr.dataset.status = d.status;
+    tr.dataset.sector = d.sector;
+    tr.dataset.yield = d.yield || 0;
+
+    tr.innerHTML = `
+      <td class="ticker">${d.ticker}</td>
+      <td class="company" title="${d.company}">${d.company}</td>
+      <td><span class="sector-tag ${getSectorClass(d.sector)}">${d.sector}</span></td>
+      <td class="dps">${d.dps != null ? '₱' + d.dps.toFixed(d.dps < 1 ? 4 : 2) : '—'}</td>
+      <td class="dps" style="color:#8b949e">${d.annual ? '₱' + d.annual.toFixed(d.annual < 1 ? 3 : 2) : '—'}</td>
+      <td>${yieldText}</td>
+      <td class="yield-bar-cell"><div class="yield-bar"><div class="yield-bar-fill" style="width:${yieldBarW}%"></div></div></td>
+      <td class="date-cell">${formatDate(d.exDate)}</td>
+      <td class="date-cell">${formatDate(d.payDate)}</td>
+      <td class="freq-tag">${d.freq}</td>
+      <td>${statusBadge}</td>
+      <td class="notes-cell">${d.notes ? `<span class="${d.notes.includes('infusion') || d.notes.includes('special') || d.notes.includes('jump') || d.notes.includes('increase') ? 'highlight' : ''}">${d.notes}</span>` : ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('total-count').textContent = deduped.length;
+  document.getElementById('urgent-count').textContent = urgentCount;
+  document.getElementById('upcoming-count').textContent = upcomingCount;
+
+  applyFilters();
+}
+
+renderTable();
+</script>
+</body>
+</html>
