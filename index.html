@@ -107,7 +107,7 @@
     <div style="font-size:0.72rem; color:#484f58; margin-top:3px;">Philippine Stock Exchange — 2026 Dividend Tracker</div>
   </div>
   <div class="meta">
-    Reference Date: <span>June 30, 2026</span><br>
+    Reference Date: <span>2026-07-01</span><br>
     Sources: PSE EDGE · EODHD · StockAnalysis · COL Financial<br>
     <span style="color:#f85149">⚠ For reference only — verify via PSE EDGE before executing</span>
   </div>
@@ -171,65 +171,6 @@
 
 <script>
 const DATA = [
-  // URGENT
-  { ticker:"JFCPB", company:"JFC Preferred Series B", sector:"Preferred", dps:10.60125, annual:42.405, yield:null, exDate:"2026-07-01", payDate:"2026-07-15", freq:"Quarterly", status:"urgent", notes:"PSE EDGE confirmed" },
-  { ticker:"SGP", company:"Synergy Grid & Power", sector:"Utilities", dps:0.3474, annual:0.6948, yield:null, exDate:"2026-07-07", payDate:"2026-07-24", freq:"Semi-Annual", status:"urgent", notes:"Semi-annual tranche" },
-  { ticker:"SBS", company:"SBS Philippines Corp", sector:"Industrials", dps:0.0035, annual:0.0035, yield:null, exDate:"2026-07-09", payDate:"2026-07-22", freq:"Annual", status:"urgent", notes:"Small cap" },
-  { ticker:"FNI", company:"Global Ferronickel Holdings", sector:"Mining", dps:0.0603, annual:0.0603, yield:null, exDate:"2026-07-29", payDate:"2026-08-25", freq:"Annual", status:"urgent", notes:"Mining sector" },
-  { ticker:"DDMPR", company:"DDMP REIT Inc", sector:"REIT", dps:0.024253, annual:0.095, yield:9.05, exDate:"2026-07-30", payDate:"2026-08-27", freq:"Quarterly", status:"urgent", notes:"Highest-yield REIT; C04735-2026 confirmed" },
-  // UPCOMING
-  { ticker:"PGOLD", company:"Puregold Price Club", sector:"Retail", dps:0.79, annual:1.97, yield:4.89, exDate:"2026-08-14", payDate:"2026-09-09", freq:"Semi-Annual", status:"upcoming", notes:"Semi-annual final tranche" },
-  { ticker:"COSCO", company:"Cosco Capital Inc", sector:"Retail", dps:0.133, annual:0.133, yield:null, exDate:"2026-08-19", payDate:"2026-09-14", freq:"Annual", status:"upcoming", notes:"" },
-  { ticker:"AUB", company:"Asia United Bank Corp", sector:"Banking", dps:1.00, annual:2.50, yield:null, exDate:"2026-09-11", payDate:"2026-09-30", freq:"Semi-Annual", status:"upcoming", notes:"" },
-  { ticker:"PNB", company:"Philippine National Bank", sector:"Banking", dps:1.65, annual:3.30, yield:5.69, exDate:"2026-09-17", payDate:"2026-10-01", freq:"Quarterly", status:"upcoming", notes:"" },
-  { ticker:"PSE", company:"Phil. Stock Exchange Inc", sector:"Exchange", dps:5.50, annual:11.00, yield:5.00, exDate:"2026-09-30", payDate:"2026-10-12", freq:"Semi-Annual", status:"upcoming", notes:"" },
-  // EXPECTED
-  { ticker:"GLO", company:"Globe Telecom Inc", sector:"Telco", dps:25.00, annual:100.00, yield:5.56, exDate:"2026-08-01", payDate:"2026-08-20", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
-  { ticker:"AREIT", company:"AREIT Inc", sector:"REIT", dps:0.62, annual:2.48, yield:6.67, exDate:"2026-08-25", payDate:"2026-09-10", freq:"Quarterly", status:"expected", notes:"PHP19.5B asset infusion approved; AUM→PHP158B" },
-  { ticker:"MREIT", company:"MREIT Inc", sector:"REIT", dps:0.263, annual:1.052, yield:7.17, exDate:"2026-08-14", payDate:"2026-08-29", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
-  { ticker:"RCR", company:"RL Commercial REIT", sector:"REIT", dps:0.1115, annual:0.446, yield:6.28, exDate:"2026-08-18", payDate:"2026-09-01", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
-  { ticker:"FILRT", company:"Filinvest REIT Corp", sector:"REIT", dps:0.060, annual:0.24, yield:8.23, exDate:"2026-08-22", payDate:"2026-09-05", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
-  { ticker:"LTG", company:"LT Group Inc", sector:"Holding", dps:0.30, annual:1.25, yield:8.41, exDate:"2026-09-04", payDate:"2026-09-18", freq:"Quarterly", status:"expected", notes:"Pattern-based est. ~Sep 2026" },
-  { ticker:"BDO", company:"BDO Unibank Inc", sector:"Banking", dps:1.10, annual:4.40, yield:3.37, exDate:"2026-09-08", payDate:"2026-09-22", freq:"Quarterly", status:"expected", notes:"Papa Sec flags Q2 earnings leader" },
-  { ticker:"MBT", company:"Metropolitan Bank", sector:"Banking", dps:1.50, annual:5.00, yield:7.59, exDate:"2026-09-06", payDate:"2026-09-26", freq:"Semi-Annual", status:"expected", notes:"Maybank-KE: special dividend possible; highest CET1" },
-  { ticker:"TEL", company:"PLDT Inc", sector:"Telco", dps:48.00, annual:94.00, yield:8.33, exDate:"2026-08-25", payDate:"2026-09-16", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Aug 2026" },
-  { ticker:"MER", company:"Manila Electric Company", sector:"Utilities", dps:11.00, annual:28.00, yield:4.83, exDate:"2026-08-25", payDate:"2026-09-20", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Aug-Sep 2026" },
-  { ticker:"CNPF", company:"Century Pacific Food", sector:"Food", dps:0.55, annual:1.15, yield:3.83, exDate:"2026-08-02", payDate:"2026-08-25", freq:"Semi-Annual", status:"expected", notes:"Pattern-based est. ~Jul-Aug 2026" },
-  // PAST
-  { ticker:"AC", company:"Ayala Corporation", sector:"Holding", dps:4.605, annual:9.21, yield:2.18, exDate:"2026-01-02", payDate:"2026-01-14", freq:"Semi-Annual", status:"past", notes:"" },
-  { ticker:"MBT", company:"Metropolitan Bank", sector:"Banking", dps:3.50, annual:5.00, yield:7.59, exDate:"2026-03-06", payDate:"2026-03-26", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"MER", company:"Manila Electric Company", sector:"Utilities", dps:16.672, annual:28.00, yield:4.83, exDate:"2026-03-25", payDate:"2026-04-20", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"TEL", company:"PLDT Inc", sector:"Telco", dps:46.00, annual:94.00, yield:8.33, exDate:"2026-03-25", payDate:"2026-04-16", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"ALI", company:"Ayala Land Inc", sector:"Property", dps:0.3513, annual:0.58, yield:3.80, exDate:"2026-03-05", payDate:"2026-03-19", freq:"Semi-Annual", status:"past", notes:"" },
-  { ticker:"CNPF", company:"Century Pacific Food", sector:"Food", dps:0.60, annual:1.15, yield:3.83, exDate:"2026-03-02", payDate:"2026-03-25", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"AEV", company:"Aboitiz Equity Ventures", sector:"Holding", dps:1.53, annual:1.10, yield:3.26, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"" },
-  { ticker:"AP", company:"Aboitiz Power Corp", sector:"Utilities", dps:2.28, annual:1.35, yield:3.34, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"" },
-  { ticker:"ICT", company:"Int'l Container Terminal Svcs", sector:"Industrials", dps:17.85, annual:18.69, yield:2.11, exDate:"2026-03-18", payDate:"2026-03-27", freq:"Annual", status:"past", notes:"USD earner; PSO hedge" },
-  { ticker:"AREIT", company:"AREIT Inc", sector:"REIT", dps:0.62, annual:2.48, yield:6.67, exDate:"2026-05-26", payDate:"2026-06-11", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"MREIT", company:"MREIT Inc", sector:"REIT", dps:0.263, annual:1.052, yield:7.17, exDate:"2026-05-14", payDate:"2026-05-29", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"RCR", company:"RL Commercial REIT", sector:"REIT", dps:0.1115, annual:0.446, yield:6.28, exDate:"2026-05-18", payDate:"2026-06-01", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"FILRT", company:"Filinvest REIT Corp", sector:"REIT", dps:0.060, annual:0.24, yield:8.23, exDate:"2026-05-22", payDate:"2026-06-05", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"PREIT", company:"Premiere Island REIT", sector:"REIT", dps:0.035, annual:0.127, yield:10.91, exDate:"2026-05-15", payDate:"-", freq:"Quarterly", status:"past", notes:"Highest yield REIT in universe" },
-  { ticker:"CREIT", company:"Citicore REIT Corp", sector:"REIT", dps:0.049, annual:0.196, yield:5.85, exDate:"2026-06-10", payDate:"2026-07-08", freq:"Quarterly", status:"past", notes:"Solar/renewable focus" },
-  { ticker:"GLO", company:"Globe Telecom Inc", sector:"Telco", dps:25.00, annual:100.00, yield:5.56, exDate:"2026-05-22", payDate:"2026-06-10", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"BDO", company:"BDO Unibank Inc", sector:"Banking", dps:1.10, annual:4.40, yield:3.37, exDate:"2026-06-08", payDate:"2026-06-22", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"BPI", company:"Bank of the Philippine Islands", sector:"Banking", dps:2.58, annual:4.56, yield:4.68, exDate:"2026-06-03", payDate:"2026-06-18", freq:"Semi-Annual", status:"past", notes:"" },
-  { ticker:"LTG", company:"LT Group Inc", sector:"Holding", dps:0.30, annual:1.25, yield:8.41, exDate:"2026-06-04", payDate:"2026-06-18", freq:"Quarterly", status:"past", notes:"Q2 tranche paid" },
-  { ticker:"DMC", company:"DMCI Holdings Inc", sector:"Industrials", dps:0.30, annual:0.78, yield:10.26, exDate:"2026-05-20", payDate:"2026-06-05", freq:"Semi-Annual", status:"past", notes:"High yield conglomerate" },
-  { ticker:"SM", company:"SM Investments Corp", sector:"Holding", dps:17.00, annual:17.00, yield:2.85, exDate:"2026-05-13", payDate:"2026-05-28", freq:"Annual", status:"past", notes:"31% jump from PHP13 in FY25" },
-  { ticker:"SMPH", company:"SM Prime Holdings", sector:"Property", dps:0.42, annual:0.48, yield:2.59, exDate:"2026-05-12", payDate:"2026-05-27", freq:"Annual", status:"past", notes:"" },
-  { ticker:"JFC", company:"Jollibee Foods Corp", sector:"Food", dps:1.33, annual:3.44, yield:2.62, exDate:"2026-05-04", payDate:"2026-05-21", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"RLC", company:"Robinsons Land Corp", sector:"Property", dps:1.00, annual:1.00, yield:6.06, exDate:"2026-05-25", payDate:"2026-06-08", freq:"Annual", status:"past", notes:"33% increase from PHP0.75 FY25" },
-  { ticker:"FLI", company:"Filinvest Land Inc", sector:"Property", dps:0.05, annual:0.05, yield:7.25, exDate:"2026-05-13", payDate:"2026-05-22", freq:"Annual", status:"past", notes:"" },
-  { ticker:"EW", company:"East West Banking Corp", sector:"Banking", dps:0.82, annual:0.68, yield:5.59, exDate:"2026-05-08", payDate:"2026-05-29", freq:"Annual", status:"past", notes:"" },
-  { ticker:"SECB", company:"Security Bank Corp", sector:"Banking", dps:1.50, annual:3.00, yield:4.59, exDate:"2026-04-22", payDate:"2026-05-08", freq:"Semi-Annual", status:"past", notes:"" },
-  { ticker:"CBC", company:"China Banking Corp", sector:"Banking", dps:2.80, annual:2.80, yield:4.90, exDate:"2026-04-29", payDate:"2026-05-14", freq:"Annual", status:"past", notes:"" },
-  { ticker:"MONDE", company:"Monde Nissin Corp", sector:"Food", dps:0.24, annual:0.48, yield:6.78, exDate:"2026-04-23", payDate:"2026-05-21", freq:"Semi-Annual", status:"past", notes:"H1 tranche paid" },
-  { ticker:"GTCAP", company:"GT Capital Holdings", sector:"Holding", dps:7.08, annual:10.08, yield:2.02, exDate:"2026-04-07", payDate:"2026-04-22", freq:"Semi-Annual", status:"past", notes:"" },
-  { ticker:"URC", company:"Universal Robina Corp", sector:"Food", dps:2.10, annual:2.10, yield:3.28, exDate:"2026-04-08", payDate:"2026-05-07", freq:"Annual", status:"past", notes:"" },
-  { ticker:"SMC", company:"San Miguel Corporation", sector:"Diversified", dps:0.35, annual:1.40, yield:2.07, exDate:"2026-06-25", payDate:"2026-07-22", freq:"Quarterly", status:"past", notes:"" },
-  { ticker:"EMI", company:"Emperador Inc", sector:"Food", dps:0.1351, annual:0.14, yield:0.88, exDate:"2026-01-19", payDate:"2026-01-29", freq:"Annual", status:"past", notes:"" },
-  { ticker:"CEU", company:"Centro Escolar University", sector:"Education", dps:1.00, annual:1.00, yield:null, exDate:"2026-06-29", payDate:"2026-07-23", freq:"Annual", status:"past", notes:"" },
 ];
 
 let currentFilter = 'all';
